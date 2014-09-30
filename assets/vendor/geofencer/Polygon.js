@@ -33,6 +33,14 @@ var Polygon = function Polygon(map, name){
             this.override_map_click = false;
         }
     }, this);
+
+    this.map.contextmenu.insertItem({
+        text: 'Show Coordinates',
+        callback: function(e){
+            L.popup().setContent(e.latlng.lat + ", " + e.latlng.lng).setLatLng(e.latlng).openOn(this.map);
+        },
+        context: this
+    })
 }
 
 // folder of marker images
@@ -56,11 +64,21 @@ Polygon.prototype = {
         return this.array_markers.length/2 > 2;
     },
     make_marker: function(latlng, type){
-        var marker = new L.Marker(latlng, {
-            icon: this.icon[type],
-            draggable: true
-        });
         var id = "marker_" + this.id_counter++;
+
+        var marker = new L.marker(latlng, {
+            icon: this.icon[type],
+            draggable: true,
+            contextmenu: true,
+            contextmenuItems: [{
+                text: 'Delete',
+                index: 0,
+                callback: function(e){
+                    this.delete_marker(marker);
+                },
+                context: this
+            }]
+        });
         marker._leaflet_id = id;
         marker.type = type;
 
@@ -113,9 +131,10 @@ Polygon.prototype = {
     },
 
     changeMarkerType: function(marker, type){
-        if(marker.type != type){
-            marker.type = type;
-            marker.icon = this.icon[type];
+        marker.type = type;
+        marker.icon = this.icon[type];
+        if(marker.type != 'ghost'){
+            marker.contextmenu = true;
         }
     },
 
