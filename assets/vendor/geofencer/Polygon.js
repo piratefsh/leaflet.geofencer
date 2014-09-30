@@ -148,6 +148,7 @@ Polygon.prototype = {
     },
 
     onMarkerDragStart: function (e) {
+        e.target.type = "vertex";
         this.remove_midpoints();
         this.drag = true;
     },
@@ -156,6 +157,7 @@ Polygon.prototype = {
         this.drag = false;
         this.override_map_click = true;
         this.drag_end = true;
+
         this.update_midpoints();
     },
 
@@ -188,6 +190,9 @@ Polygon.prototype = {
     },
 
     onMarkerClick: function (e) {
+        if(e.target.type == 'ghost'){
+            return;
+        }
         if(this.drag_end){
             this.drag_end = false;
             return;
