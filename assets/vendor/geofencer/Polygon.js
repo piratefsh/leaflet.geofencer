@@ -34,7 +34,8 @@ Polygon.prototype = {
             icon: this.icon[type],
             draggable: true
         });
-        marker._leaflet_id = "marker_" + this.id_counter++;
+        var id = "marker_" + this.id_counter++;
+        marker._leaflet_id = id;
         marker.type = type;
 
         marker.on('dragstart', this.onMarkerDragStart, this);
@@ -43,6 +44,7 @@ Polygon.prototype = {
         marker.on('mouseout', this.onMarkerMouseOut, this);
         marker.on('drag', this.onMarkerDrag, this);
         marker.on('click', this.onMarkerClick, this);
+        marker.bindPopup("Marker " + id);
         return marker;
     },
 
@@ -76,36 +78,77 @@ Polygon.prototype = {
         }
         var marker = this.make_marker(latlng, type)
 
-        // Add midpoint marker
-        var prevMarker, prevLatLng, midMarker;
-        var currLatLng = latlng;
-        prevMarker = this.array_markers[this.array_markers.length-1];
-        if(prevMarker){
-            prevLatLng = prevMarker.getLatLng();
-            midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
-            
-            this.add_marker_to_layer(midMarker);
-        }
-
         this.add_marker_to_layer(marker);
+        this.update_midpoints();
 
         if (this.array_markers.length > 1) {
             this.create_polygon();
         }
     },
 
-    changerMarkerType: function(marker, type){
+    changeMarkerType: function(marker, type){
         if(marker.type != type){
             marker.type = type;
             marker.icon = this.icon[type];
         }
     },
 
-    updateMidpoints: function(){
-        // Remove all midpoints
+    remove_midpoints: function(){
+        // Remove all midpoint markers
+        var midpoint_type = 'ghost';
+        this.layer_markers.eachLayer(function(e){
+            if(e.type == midpoint_type){
+                this.layer_markers.removeLayer(e);
+                var m = this.array_markers.splice(this.array_markers.indexOf(e), 1);
+            }
+            else{
+                var m = e;
+            }
+        }, this);
+    },
+
+    update_midpoints: function(){
+        // Remove midpoints
+        this.remove_midpoints();
+
+        // Add new midpoints
+        var prevMarker, prevLatLng, currMarker, currLatLng, midMarker, firstMarker;
+        var newMarkers = new Array();
+
+        for(var i = 0; i < this.array_markers.length; i++){
+            currMarker = this.array_markers[i];
+            if(!prevMarker){
+                prevMarker = currMarker;
+                firstMarker = currMarker;
+            }
+            else{
+                prevLatLng = prevMarker.getLatLng();
+                currLatLng = currMarker.getLatLng();
+                midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
+                newMarkers.push(midMarker);
+            }
+
+            newMarkers.push(currMarker);
+            prevMarker = currMarker;
+
+            // Midpoint for first and last
+            if(i == this.array_markers.length-1 && firstMarker && currMarker){
+                var lastMidpoint = this.make_midpoint_marker(currMarker.getLatLng(), firstMarker.getLatLng());
+                newMarkers.push(lastMidpoint);
+            }
+        }
+
+        this.layer_markers.clearLayers();
+        this.array_markers = new Array();
+        for(var i in newMarkers){
+            this.add_marker_to_layer(newMarkers[i]);
+        }
+
+        this.create_polygon();
     },
 
     onMarkerDragStart: function (e) {
+        this.remove_midpoints();
         this.drag = true;
     },
 
@@ -113,6 +156,7 @@ Polygon.prototype = {
         this.drag = false;
         this.override_map_click = true;
         this.drag_end = true;
+        this.update_midpoints();
     },
 
     onMarkerMouseOver: function (e) {
@@ -126,7 +170,7 @@ Polygon.prototype = {
     onMarkerDrag: function(e) {
         var self = this;
 
-        this.changerMarkerType(e.target, 'vertex')
+        this.changeMarkerType(e.target, 'vertex')
 
         if (self.array_markers.length > 1) { 
             var id = e.target._leaflet_id;
@@ -164,6 +208,7 @@ Polygon.prototype = {
 
             // Remove marker from later and redraw polygon
             this.layer_markers.removeLayer(marker);
+            this.update_midpoints();
             self.create_polygon();
         }
     },
@@ -233,7 +278,7 @@ Polygon.prototype = {
                 curr = new_markers.pop()
                 curr.addTo(this.layer_markers);
             }
-            
+
             this.drag = false;
             this.override_map_click = true;
         }
