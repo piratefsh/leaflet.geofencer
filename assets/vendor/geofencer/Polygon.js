@@ -1,6 +1,7 @@
     
 var Polygon = function Polygon(map){
     var img_dir = 'assets/vendor/geofencer/images/';
+    this.id_counter     = 0;
     this.map            = map;
     this.map.polygon    = this;
     this.array_markers  = new Array();
@@ -33,9 +34,7 @@ Polygon.prototype = {
             icon: this.icon[type],
             draggable: true
         });
-        var d = new Date();
-        var n = d.getTime();
-        marker._leaflet_id = "marker_" + n.toString();
+        marker._leaflet_id = "marker_" + this.id_counter++;
         marker.type = type;
 
         marker.on('dragstart', this.onMarkerDragStart, this);
@@ -75,9 +74,7 @@ Polygon.prototype = {
         // Add midpoint marker
         var prevMarker, prevLatLng, midMarker;
         var currLatLng = latlng;
-
-        prevMarker = this.array_markers[this.array_markers.length-1]
-
+        prevMarker = this.array_markers[this.array_markers.length-1];
         if(prevMarker){
             prevLatLng = prevMarker.getLatLng();
             midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
@@ -153,6 +150,7 @@ Polygon.prototype = {
             var marker = e.target;
             var id = marker._leaflet_id;
 
+            // Find and remove marker from array
             for (var i = 0; i < self.array_markers.length; i++) {
                 if (self.array_markers[i]._leaflet_id == id) {
                     self.array_markers.splice(i, 1);
@@ -160,35 +158,19 @@ Polygon.prototype = {
                 }
             }
 
+            // Remove marker from later and redraw polygon
             this.layer_markers.removeLayer(marker);
-
             self.create_polygon();
         }
-
     },
 
     create_polygon: function () {
-        var array_coordinates = new Array();
+        var polygon_coords = new Array();
 
         var prev, curr, mid;
         for (var i = 0; i < this.array_markers.length; i++) {
             curr = this.array_markers[i].getLatLng();
-            
-
-            // if (!prev){
-            //     prev = curr;
-            // }
-            // else{
-            //     // find midpoint as new vertex point
-            //     var midLat = (prev.lat + curr.lat)/2.0;
-            //     var midLng = (prev.lng + curr.lng)/2.0;
-            //     mid = L.latLng(midLat, midLng);
-
-            //     array_coordinates.push(mid)
-            //     // this.add_marker(mid, 'ghost')
-            //     prev = curr;
-            // }
-            array_coordinates.push(curr);
+            polygon_coords.push(curr);
         }
 
 
@@ -196,7 +178,7 @@ Polygon.prototype = {
             this.map.removeLayer(this.polygon_layer);
         }
 
-        this.polygon_layer = new L.Polygon(array_coordinates,
+        this.polygon_layer = new L.Polygon(polygon_coords,
         {   
             color: '#810541',
             fillColor: '#D462FF',
