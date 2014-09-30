@@ -1,6 +1,7 @@
     
-var Polygon = function Polygon(map){
+var Polygon = function Polygon(map, name){
     var img_dir = 'assets/vendor/geofencer/images/';
+    this.name           = name;
     this.id_counter     = 0;
     this.map            = map;
     this.map.polygon    = this;
@@ -22,13 +23,27 @@ var Polygon = function Polygon(map){
             iconUrl: img_dir + 'vertex-ghost.png',
             iconSize: [10, 10],
         })
-    }
+    };
+
+    this.map.on('click', function(e){
+        if(!this.is_solid() && !(this.drag || this.override_map_click)){
+            this.create_marker(e.latlng);
+        }
+        else {
+            this.override_map_click = false;
+        }
+    }, this);
 }
 
 // folder of marker images
 var img_dir = 'assets/vendor/geofencer/images/'
 
 Polygon.prototype = {
+    // Returns true if it's a shape, not line or dot
+    is_solid: function(){
+        // More than 2 vertices
+        return this.array_markers.length/2 > 2;
+    },
     make_marker: function(latlng, type){
         var marker = new L.Marker(latlng, {
             icon: this.icon[type],
@@ -249,7 +264,7 @@ Polygon.prototype = {
         this.polygon_layer.dragging.enable();
 
         // Create popup
-        this.polygon_layer.bindPopup('Polygon');
+        this.polygon_layer.bindPopup(this.name);
     },
 
     onPolygonClick: function(e){
