@@ -70,7 +70,11 @@ Polygon.prototype = {
         marker.on('mouseout', this.onMarkerMouseOut, this);
         marker.on('drag', this.onMarkerDrag, this);
         marker.on('click', this.onMarkerClick, this);
-        marker.bindPopup("Marker " + id);
+
+        var popUpContent = "<span>id: {{id}} <span>";
+        
+        popUpContent = popUpContent.replace(/{{id}}/g, id);
+        marker.bindPopup(popUpContent);
         return marker;
     },
 
@@ -215,9 +219,9 @@ Polygon.prototype = {
     
     },
 
-    delete_marker: function (e) {
+    delete_marker: function (marker) {
         // don't delete ghost markers
-        if(e.target.type == 'ghost'){
+        if(marker.type == 'ghost'){
             return;
         }
 
@@ -228,7 +232,7 @@ Polygon.prototype = {
         var self = this;
 
         if (self.array_markers.length > 1) {
-            var marker = e.target;
+            var marker = marker;
             var id = marker._leaflet_id;
 
             // Find and remove marker from array
