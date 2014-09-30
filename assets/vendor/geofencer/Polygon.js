@@ -4,7 +4,7 @@ var Polygon = function Polygon(map){
     this.map            = map;
     this.map.polygon    = this;
     this.array_markers  = new Array();
-    this.layer_markers  = new L.LayerGroup();
+    this.layer_markers  = new L.LayerGroup().addTo(this.map);
     this.drag           = false;
     this.drag_end       = false;
     this.override_map_click = false;
@@ -47,6 +47,25 @@ Polygon.prototype = {
         return marker;
     },
 
+    make_midpoint_marker: function(aLatLng, bLatLng){
+        if(!aLatLng || !bLatLng){
+            return null;
+        }
+
+        // find midpoint as new vertex point
+        var midLat, midLng, midLatLng;
+        
+        midLat = (aLatLng.lat + bLatLng.lat)/2.0;
+        midLng = (aLatLng.lng + bLatLng.lng)/2.0;
+        midLatLng = L.latLng(midLat, midLng);
+
+        return this.make_marker(midLatLng, 'ghost');
+    },
+
+    add_midpoint_marker: function(marker){
+
+    },
+
     create_marker: function (latlng, type) {
         if(!type){
             type = 'vertex';
@@ -54,29 +73,20 @@ Polygon.prototype = {
         var marker = this.make_marker(latlng, type)
 
         // Add midpoint marker
-        var prevMarker, midMarker, prev, curr, mid;
-        curr = latlng;
+        var prevMarker, prevLatLng, midMarker;
+        var currLatLng = latlng;
+
         prevMarker = this.array_markers[this.array_markers.length-1]
-        console.log(this.array_markers)
-        console.log(this.array_markers.length)
 
         if(prevMarker){
-            prev = prevMarker.getLatLng();
-            // find midpoint as new vertex point
-            var midLat = (prev.lat + curr.lat)/2.0;
-            var midLng = (prev.lng + curr.lng)/2.0;
-            mid = L.latLng(midLat, midLng);
-
-            midMarker = this.make_marker(mid, 'ghost')
+            prevLatLng = prevMarker.getLatLng();
+            midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
             midMarker.addTo(this.layer_markers),
             this.array_markers.push(midMarker);
         }
 
         marker.addTo(this.layer_markers),
         this.array_markers.push(marker);
-
-        this.map.removeLayer(this.layer_markers);
-        this.map.addLayer(this.layer_markers);
 
         if (this.array_markers.length > 1) {
             this.create_polygon();
@@ -91,7 +101,7 @@ Polygon.prototype = {
     },
 
     updateMidpoints: function(){
-
+        // Remove all midpoints
     },
 
     onMarkerDragStart: function (e) {
@@ -140,24 +150,17 @@ Polygon.prototype = {
         var self = this;
 
         if (self.array_markers.length > 1) {
-            var marker_pulsado = e.target;
-            var marker_pulsado_id = marker_pulsado._leaflet_id;
+            var marker = e.target;
+            var id = marker._leaflet_id;
 
             for (var i = 0; i < self.array_markers.length; i++) {
-                if (self.array_markers[i]._leaflet_id == marker_pulsado_id) {
+                if (self.array_markers[i]._leaflet_id == id) {
                     self.array_markers.splice(i, 1);
                     break;
                 }
             }
 
-            self.map.removeLayer(marker_pulsado);
-            self.map.removeLayer(self.layer_markers);
-
-            self.layer_markers = new L.LayerGroup();
-            for (var i = 0; i < self.array_markers.length; i++) {
-                self.array_markers[i].addTo(self.layer_markers);
-            }
-            self.map.addLayer(self.layer_markers);
+            this.layer_markers.removeLayer(marker);
 
             self.create_polygon();
         }
