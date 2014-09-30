@@ -21,12 +21,12 @@ var Polygon = function Polygon(map, name){
         }),
         ghost: L.icon({
             iconUrl: img_dir + 'vertex-ghost.png',
-            iconSize: [10, 10],
+            iconSize: [15, 15],
         })
     };
 
     this.map.on('click', function(e){
-        if(!this.is_solid() && !(this.drag || this.override_map_click)){
+        if(!this.isSolid() && !(this.drag || this.override_map_click)){
             this.create_marker(e.latlng);
         }
         else {
@@ -39,8 +39,19 @@ var Polygon = function Polygon(map, name){
 var img_dir = 'assets/vendor/geofencer/images/'
 
 Polygon.prototype = {
-    // Returns true if it's a shape, not line or dot
-    is_solid: function(){
+    getCoordinates: function(){
+        var coords = new Array();
+        var curr;
+        for(var i in this.array_markers){
+            curr = this.array_markers[i];
+
+            if(curr.type != 'ghost'){
+                coords.push(curr.getLatLng());
+            }
+        }
+        return coords;
+    },
+    isSolid: function(){
         // More than 2 vertices
         return this.array_markers.length/2 > 2;
     },
@@ -76,10 +87,6 @@ Polygon.prototype = {
         midLatLng = L.latLng(midLat, midLng);
 
         return this.make_marker(midLatLng, 'ghost');
-    },
-
-    add_midpoint_marker: function(marker){
-
     },
 
     add_marker_to_layer: function(marker){
@@ -204,10 +211,16 @@ Polygon.prototype = {
         }
     },
 
-    onMarkerClick: function (e) {
+    onMarkerClick: function(){
+    
+    },
+
+    delete_marker: function (e) {
+        // don't delete ghost markers
         if(e.target.type == 'ghost'){
             return;
         }
+
         if(this.drag_end){
             this.drag_end = false;
             return;
