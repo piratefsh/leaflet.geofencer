@@ -65,6 +65,11 @@ Polygon.prototype = {
 
     },
 
+    add_marker_to_layer: function(marker){
+        marker.addTo(this.layer_markers),
+        this.array_markers.push(marker);
+    },
+
     create_marker: function (latlng, type) {
         if(!type){
             type = 'vertex';
@@ -78,12 +83,11 @@ Polygon.prototype = {
         if(prevMarker){
             prevLatLng = prevMarker.getLatLng();
             midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
-            midMarker.addTo(this.layer_markers),
-            this.array_markers.push(midMarker);
+            
+            this.add_marker_to_layer(midMarker);
         }
 
-        marker.addTo(this.layer_markers),
-        this.array_markers.push(marker);
+        this.add_marker_to_layer(marker);
 
         if (this.array_markers.length > 1) {
             this.create_polygon();
@@ -215,17 +219,21 @@ Polygon.prototype = {
         if (this.layer_markers != null) {
             var polygon_coords = e.target._latlngs;
 
-            var new_markers = new L.LayerGroup();
-            
+            var new_markers = new Array();
+            var curr;
             for (var i = 0; i < polygon_coords.length; i++) {
-                this.array_markers[i]._latlng = polygon_coords[i];
-                this.array_markers[i].addTo(new_markers);
+                curr = this.array_markers[i];
+                curr._latlng = polygon_coords[i];
+                new_markers.push(curr);
+            }
+
+            // Remove old markers and add new ones
+            this.layer_markers.clearLayers();
+            while(new_markers.length > 0){
+                curr = new_markers.pop()
+                curr.addTo(this.layer_markers);
             }
             
-            this.map.removeLayer(this.layer_markers);
-            this.layer_markers = new_markers
-            this.map.addLayer(this.layer_markers);
-
             this.drag = false;
             this.override_map_click = true;
         }
