@@ -9,20 +9,22 @@ $(function() {
     initialize();
     
     function initialize() {
+        // Create map and polygon for map
         map     = new GeofencingMap('map').map;
         polygon = new Polygon(map, $('#polygon-name').val());
 
+        // Add markers for polygon coordinates
         var splitLatLng = totalLatLng.split("|");
-
-        
-        for(var i=0;i<splitLatLng.length;i++){
+        for(var i = 0; i < splitLatLng.length; i++){
             var latlng = splitLatLng[i].trim().substring(1, splitLatLng[i].length-1).split(",");
             if(latlng.length > 1){
                 polygon.createMarker(L.latLng(latlng[0], latlng[1]));
             }
         }
 
-        polygon.onPolygonClick();
+        polygon.openPopup();
+        
+        // Update coordinates displayed on 'C' press
         updateCoords();
         $(window).keyup(function(e){
             if(e.keyCode == 67){

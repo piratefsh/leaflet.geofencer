@@ -321,10 +321,14 @@ Polygon.prototype = {
 
     },
 
-    onPolygonClick: function(e){
+    openPopup: function(){
         // Open popup
         var center = this.polygon_layer.getBounds().getCenter();
         this.popup = L.popup().setLatLng(center).setContent(this.name).openOn(this.map);
+    },
+
+    onPolygonClick: function(e){
+        this.openPopup();
     },
 
     onPoligonDragStart: function (e) {
