@@ -8,6 +8,7 @@ var Polygon = function Polygon(map, name){
     this.drag           = false;
     this.drag_end       = false;
     this.override_map_click = false;
+    this.shapeClosed         = false; //line has been joined with start
 
 
     // Map icons
@@ -62,11 +63,14 @@ Polygon.prototype = {
     },
 
     clearAll: function(){
-        this.map.removeLayer(this.polygon_layer);
+        var clear = this.polygon_layer? this.map.removeLayer(this.polygon_layer) : this.map.removeLayer(this.line_layer);
         this.layer_markers.clearLayers();
-        while(this.array_markers.length>0){
+
+        while(this.array_markers.length > 0){
             this.array_markers.pop();
         };
+
+        this.shapeClosed = false;
         this.override_map_click = false;
     },
 
@@ -84,8 +88,7 @@ Polygon.prototype = {
     },
 
     isSolid: function(){
-        // More than 2 vertices
-        return this.array_markers.length/2 > 2;
+        return this.shapeClosed;
     },
 
     onChange: function(f){
@@ -150,6 +153,20 @@ Polygon.prototype = {
         this.array_markers.push(marker);
     },
 
+    equalMarkers: function(m1, m2){
+        var ll1, ll2 
+        if(m1 && m2){
+            ll1 = m1.getLatLng();
+            ll2 = m2.getLatLng();
+            if (ll1 && ll2){
+                return ll1.equals(ll2);
+            }
+        }
+
+        return false;
+    },
+
+
     createMarker: function (latlng, type) {
         if(!type){
             type = 'vertex';
@@ -160,7 +177,7 @@ Polygon.prototype = {
         this.updateMidpoints();
 
         if (this.array_markers.length > 1) {
-            this.createPolygon();
+            this.updateShapes();
         }
     },
 
@@ -215,6 +232,10 @@ Polygon.prototype = {
     updateMidpoints: function(){
         // Remove midpoints
         this.deleteMidpoints();
+
+        if(!this.isSolid()){
+            return;
+        }
 
         // Add new midpoints
         var prevMarker, prevLatLng, currMarker, currLatLng, midMarker, firstMarker;
@@ -284,15 +305,42 @@ Polygon.prototype = {
                 if (self.array_markers[i]._leaflet_id == id) {
                     self.array_markers[i].setLatLng(latlng);
 
-                    self.createPolygon();
+                    self.updateShapes();
                     break;
                 }
             }
         }
     },
 
-    onMarkerClick: function(){
-    
+    onMarkerClick: function(e){
+        var start = this.array_markers[0];
+        if(this.equalMarkers(this.array_markers[0], e.target)){
+            this.shapeClosed = true;
+            this.updateShapes();
+            return false;
+        }  
+    },
+
+    createLine: function(){
+        var line_coords = new Array();
+        var curr;
+        for(var i in this.array_markers){
+            curr = this.array_markers[i]
+            if(curr.isActive){
+                line_coords.push(curr.getLatLng());
+            }
+        }
+
+        // Remove old layer
+        if (this.line_layer != null) {
+            this.map.removeLayer(this.line_layer);
+        }
+        
+        this.line_layer = new L.Polyline(line_coords,{
+            color: '#810541',
+        })
+
+        this.map.addLayer(this.line_layer);
     },
 
     createPolygon: function () {
@@ -329,22 +377,28 @@ Polygon.prototype = {
 
     openPopup: function(){
         // Open popup
-        var center = this.polygon_layer.getBounds().getCenter();
-        this.popup = L.popup().setLatLng(center).setContent(this.name).openOn(this.map);
-    },
-
-    onPolygonClick: function(e){
-        this.openPopup();
-    },
-
-    onPolygonDragStart: function (e) {
-        if (this.layer_markers) {
-            this.layer_markers.clearLayers();
+        if(this.polygon_layer){
+            var center = this.polygon_layer.getBounds().getCenter();
+            this.popup = L.popup().setLatLng(center).setContent(this.name).openOn(this.map);
         }
-        this.drag = true;
     },
 
-    onPolygonDragEnd: function (e) {
+    updateShapes: function(){
+        if(!this.isSolid()){
+            this.createLine();
+            return;
+        }
+        else{
+            this.map.removeLayer(this.line_layer);
+            this.updatePolygon();
+        }
+    },
+
+    updatePolygon: function(e){
+        this.createPolygon();
+    },
+
+    updateMarkers: function(e){
         if (this.layer_markers != null) {
             var polygon_coords = e.target._latlngs;
 
@@ -362,9 +416,23 @@ Polygon.prototype = {
                 curr = new_markers.pop()
                 curr.addTo(this.layer_markers);
             }
-
-            this.drag = false;
-            this.override_map_click = true;
         }
+    },
+
+    onPolygonClick: function(e){
+        this.openPopup();
+    },
+
+    onPolygonDragStart: function (e) {
+        if (this.layer_markers) {
+            this.layer_markers.clearLayers();
+        }
+        this.drag = true;
+    },
+
+    onPolygonDragEnd: function (e) {
+        this.updateMarkers(e);
+        this.drag = false;
+        this.override_map_click = true;
     }
 }
