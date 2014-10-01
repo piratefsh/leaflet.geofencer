@@ -87,7 +87,7 @@ Polygon.prototype = {
         this.polygon_layer.on('change', f)
     },
 
-    makeMarker: function(latlng, type){
+    buildMarker: function(latlng, type){
         var id = "marker_" + this.id_counter++;
 
         var marker = new L.marker(latlng, {
@@ -120,7 +120,7 @@ Polygon.prototype = {
         return marker;
     },
 
-    makeMidpointMarker: function(aLatLng, bLatLng){
+    buildMidpointMarker: function(aLatLng, bLatLng){
         if(!aLatLng || !bLatLng){
             return null;
         }
@@ -132,7 +132,7 @@ Polygon.prototype = {
         midLng = (aLatLng.lng + bLatLng.lng)/2.0;
         midLatLng = L.latLng(midLat, midLng);
 
-        return this.makeMarker(midLatLng, 'ghost');
+        return this.buildMarker(midLatLng, 'ghost');
     },
 
     addMarkerToLayer: function(marker){
@@ -144,7 +144,7 @@ Polygon.prototype = {
         if(!type){
             type = 'vertex';
         }
-        var marker = this.makeMarker(latlng, type)
+        var marker = this.buildMarker(latlng, type)
 
         this.addMarkerToLayer(marker);
         this.updateMidpoints();
@@ -181,7 +181,7 @@ Polygon.prototype = {
         }
     },
 
-    changeMarkerType: function(marker, type){
+    updateMarkerType: function(marker, type){
         marker.type = type;
         marker.icon = this.icon[type];
         if(marker.type != 'ghost'){
@@ -189,7 +189,7 @@ Polygon.prototype = {
         }
     },
 
-    removeMidpoints: function(){
+    deleteMidpoints: function(){
         // Remove all midpoint markers
         var midpoint_type = 'ghost';
         this.layer_markers.eachLayer(function(e){
@@ -205,7 +205,7 @@ Polygon.prototype = {
 
     updateMidpoints: function(){
         // Remove midpoints
-        this.removeMidpoints();
+        this.deleteMidpoints();
 
         // Add new midpoints
         var prevMarker, prevLatLng, currMarker, currLatLng, midMarker, firstMarker;
@@ -220,7 +220,7 @@ Polygon.prototype = {
             else{
                 prevLatLng = prevMarker.getLatLng();
                 currLatLng = currMarker.getLatLng();
-                midMarker = this.makeMidpointMarker(prevLatLng, currLatLng);
+                midMarker = this.buildMidpointMarker(prevLatLng, currLatLng);
                 newMarkers.push(midMarker);
             }
 
@@ -229,7 +229,7 @@ Polygon.prototype = {
 
             // Midpoint for first and last
             if(i == this.array_markers.length-1 && firstMarker && currMarker){
-                var lastMidpoint = this.makeMidpointMarker(currMarker.getLatLng(), firstMarker.getLatLng());
+                var lastMidpoint = this.buildMidpointMarker(currMarker.getLatLng(), firstMarker.getLatLng());
                 newMarkers.push(lastMidpoint);
             }
         }
@@ -245,7 +245,7 @@ Polygon.prototype = {
 
     onMarkerDragStart: function (e) {
         e.target.type = "vertex";
-        this.removeMidpoints();
+        this.deleteMidpoints();
         this.drag = true;
     },
 
@@ -268,7 +268,7 @@ Polygon.prototype = {
     onMarkerDrag: function(e) {
         var self = this;
 
-        this.changeMarkerType(e.target, 'vertex')
+        this.updateMarkerType(e.target, 'vertex')
 
         if (self.array_markers.length > 1) { 
             var id = e.target._leaflet_id;
