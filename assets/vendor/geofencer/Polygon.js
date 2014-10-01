@@ -3,7 +3,6 @@ var Polygon = function Polygon(map, name){
     this.name           = name;
     this.id_counter     = 0;
     this.map            = map;
-    this.map.polygon    = this;
     this.array_markers  = new Array();
     this.layer_markers  = new L.LayerGroup().addTo(this.map);
     this.drag           = false;
