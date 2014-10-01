@@ -316,8 +316,8 @@ Polygon.prototype = {
         this.map.addLayer(this.polygon_layer);
 
         this.polygon_layer.on('click', this.onPolygonClick, this);
-        this.polygon_layer.on('dragstart', this.onPoligonDragStart);
-        this.polygon_layer.on('dragend', this.onPoligonDragEnd, this);
+        this.polygon_layer.on('dragstart', this.onPolygonDragStart);
+        this.polygon_layer.on('dragend', this.onPolygonDragEnd, this);
         this.polygon_layer.dragging.enable();
 
     },
@@ -332,7 +332,7 @@ Polygon.prototype = {
         this.openPopup();
     },
 
-    onPoligonDragStart: function (e) {
+    onPolygonDragStart: function (e) {
         var self = Polygon;
         if (self.layer_markers != null) {
             self.map.removeLayer(self.layer_markers);
@@ -341,7 +341,7 @@ Polygon.prototype = {
         self.drag = true;
     },
 
-    onPoligonDragEnd: function (e) {
+    onPolygonDragEnd: function (e) {
         if (this.layer_markers != null) {
             var polygon_coords = e.target._latlngs;
 
