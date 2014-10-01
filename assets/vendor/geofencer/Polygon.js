@@ -283,7 +283,6 @@ Polygon.prototype = {
         this.drag = false;
         this.override_map_click = true;
         this.drag_end = true;
-
         this.updateMidpoints();
     },
 
@@ -313,11 +312,10 @@ Polygon.prototype = {
     },
 
     onMarkerClick: function(e){
-        var start = this.array_markers[0];
         if(this.equalMarkers(this.array_markers[0], e.target)){
             this.shapeClosed = true;
+            this.updateMidpoints();
             this.updateShapes();
-            return false;
         }  
     },
 
@@ -386,7 +384,6 @@ Polygon.prototype = {
     updateShapes: function(){
         if(!this.isSolid()){
             this.createLine();
-            return;
         }
         else{
             this.map.removeLayer(this.line_layer);
