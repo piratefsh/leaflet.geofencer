@@ -322,7 +322,7 @@ Polygon.prototype = {
         this.map.addLayer(this.polygon_layer);
 
         this.polygon_layer.on('click', this.onPolygonClick, this);
-        this.polygon_layer.on('dragstart', this.onPolygonDragStart);
+        this.polygon_layer.on('dragstart', this.onPolygonDragStart, this);
         this.polygon_layer.on('dragend', this.onPolygonDragEnd, this);
         this.polygon_layer.dragging.enable();
 
@@ -339,12 +339,10 @@ Polygon.prototype = {
     },
 
     onPolygonDragStart: function (e) {
-        var self = Polygon;
-        if (self.layer_markers != null) {
-            self.map.removeLayer(self.layer_markers);
+        if (this.layer_markers) {
+            this.layer_markers.clearLayers();
         }
-
-        self.drag = true;
+        this.drag = true;
     },
 
     onPolygonDragEnd: function (e) {
