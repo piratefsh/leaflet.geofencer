@@ -30,17 +30,35 @@
         }
 
         .coords{
-            padding-left: 0;
+            padding-left: 15px;
             font-size: 12px;
         }
+
+        input{
+            border: 1px solid #555;
+            padding: 8px;
+            margin: 8px 0px;
+            width: 100%;
+        }
+
     </style>
 </head>
 
 <body>
     <div>
         <div class="sidebar">
-        <h1>Coordinates</h1><span>Press 'C' for updated coordinates.</span>
-            <ul class="coords"></ul>        
+        <h1>Geofencer</h1>
+        <fieldgroup>
+            <label>Polygon name</label>
+            <input id="polygon-name" type="text" value="A Purple Polygon!"/> <button id="update-polygon" class="pull-right">Save</button>
+        </fieldgroup>
+        <h2>Coordinates</h2>
+        <p>Please select at least 3 points.</p>
+        <small>Press 'C' for updated coordinates.</small>
+            <ul class="coords"></ul>    
+            <div>
+            <a href="#" class="btn" id="clear-all">Delete Polygon</a>
+            </div>    
         </div>
         <div id="map" style="width: 800px; height: 600px; min-width: 100%; min-height:100%"></div>
     </div>

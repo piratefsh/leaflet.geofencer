@@ -7,9 +7,12 @@ var GeofencingMap = function GeofencingMap(id){
 // Instance methods
 GeofencingMap.prototype = {
     init : function init(){
-        var osmUrl = 'http://localhost:8888/Tiles/{z}/{x}/{y}.png';
-        var osmAttrib = '? OpenStreetMap contributors';
-        var osm = new L.TileLayer(osmUrl, { minZoom: 11, maxZoom: 17, attribution: osmAttrib });
+        var osmUrl = 'http://192.168.2.86:8888/Sites/googTiles/{z}/{x}/{y}.png';
+        
+
+        osmUrl = 'http://{s}.tiles.mapbox.com/v3/piratefsh.jl6ae25j/{z}/{x}/{y}.png';
+        var osmAttrib = 'OpenStreetMap contributors';
+        var osm = new L.TileLayer(osmUrl, { minZoom: 8, maxZoom: 17, attribution: osmAttrib });
         
         var map = new L.map(this.mapId, {
             contextmenu: true,

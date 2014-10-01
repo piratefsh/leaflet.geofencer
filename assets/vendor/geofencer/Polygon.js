@@ -40,13 +40,27 @@ var Polygon = function Polygon(map, name){
             L.popup().setContent(e.latlng.lat + ", " + e.latlng.lng).setLatLng(e.latlng).openOn(this.map);
         },
         context: this
-    })
+    });
 }
 
 // folder of marker images
 var img_dir = 'assets/vendor/geofencer/images/'
 
 Polygon.prototype = {
+    setName: function(name){
+        this.name = name;
+        if(this.popup){
+            this.popup.setContent(name);
+        }
+    },
+    clearAll: function(){
+        this.map.removeLayer(this.polygon_layer);
+        this.layer_markers.clearLayers();
+        while(this.array_markers.length>0){
+            this.array_markers.pop();
+        };
+        this.override_map_click = false;
+    },
     getCoordinates: function(){
         var coords = new Array();
         var curr;
@@ -62,6 +76,9 @@ Polygon.prototype = {
     isSolid: function(){
         // More than 2 vertices
         return this.array_markers.length/2 > 2;
+    },
+    onChange: function(f){
+        this.polygon_layer.on('change', f)
     },
     make_marker: function(latlng, type){
         var id = "marker_" + this.id_counter++;
@@ -244,10 +261,6 @@ Polygon.prototype = {
             return;
         }
 
-        if(this.drag_end){
-            this.drag_end = false;
-            return;
-        }
         var self = this;
 
         if (self.array_markers.length > 1) {
@@ -299,12 +312,12 @@ Polygon.prototype = {
         this.polygon_layer.on('dragend', this.onPoligonDragEnd, this);
         this.polygon_layer.dragging.enable();
 
-        // Create popup
-        this.polygon_layer.bindPopup(this.name);
     },
 
     onPolygonClick: function(e){
-        e.target.openPopup();
+        // Open popup
+        var center = this.polygon_layer.getBounds().getCenter();
+        this.popup = L.popup().setLatLng(center).setContent(this.name).openOn(this.map);
     },
 
     onPoligonDragStart: function (e) {
