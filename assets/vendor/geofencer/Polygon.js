@@ -56,6 +56,12 @@ Polygon.prototype = {
         }
     },
 
+    panToPolygon: function(){
+        if(this.polygon_layer){
+            this.map.fitBounds(this.polygon_layer.getBounds());
+        }
+    },
+
     clearAll: function(){
         this.map.removeLayer(this.polygon_layer);
         this.layer_markers.clearLayers();

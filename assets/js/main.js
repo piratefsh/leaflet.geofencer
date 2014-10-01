@@ -23,6 +23,7 @@ $(function() {
         }
 
         polygon.openPopup();
+        polygon.panToPolygon();
         
         // Update coordinates displayed on 'C' press
         updateCoords();
@@ -37,6 +38,7 @@ $(function() {
         })
         $('#update-polygon').click(function(){
             polygon.setName($('#polygon-name').val());
+            polygon.panToPolygon();
         })
     }
 
