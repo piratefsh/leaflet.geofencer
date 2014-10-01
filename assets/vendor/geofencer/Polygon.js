@@ -22,8 +22,8 @@ var Polygon = function Polygon(map, name){
             iconUrl: img_dir + 'vertex-active.png',
             iconSize: [18, 18],
         }),
-        ghost: L.icon({
-            iconUrl: img_dir + 'vertex-ghost.png',
+        inactive: L.icon({
+            iconUrl: img_dir + 'vertex-inactive.png',
             iconSize: [15, 15],
         })
     };
@@ -71,7 +71,7 @@ Polygon.prototype = {
         for(var i in this.array_markers){
             curr = this.array_markers[i];
 
-            if(curr.type != 'ghost'){
+            if(curr.isActive()){
                 coords.push(curr.getLatLng());
             }
         }
@@ -113,6 +113,11 @@ Polygon.prototype = {
         marker.on('drag', this.onMarkerDrag, this);
         marker.on('click', this.onMarkerClick, this);
 
+        // Add method to determine marker type
+        marker.isActive = function(){
+            return marker.type != 'inactive';
+        }
+
         var popUpContent = "<span>id: {{id}} <span>";
         
         popUpContent = popUpContent.replace(/{{id}}/g, id);
@@ -132,7 +137,7 @@ Polygon.prototype = {
         midLng = (aLatLng.lng + bLatLng.lng)/2.0;
         midLatLng = L.latLng(midLat, midLng);
 
-        return this.buildMarker(midLatLng, 'ghost');
+        return this.buildMarker(midLatLng, 'inactive');
     },
 
     addMarkerToLayer: function(marker){
@@ -155,8 +160,8 @@ Polygon.prototype = {
     },
 
     deleteMarker: function (marker) {
-        // don't delete ghost markers
-        if(marker.type == 'ghost'){
+        // Don't delete inactive markers
+        if(!marker.isActive()){
             return;
         }
 
@@ -184,16 +189,15 @@ Polygon.prototype = {
     updateMarkerType: function(marker, type){
         marker.type = type;
         marker.icon = this.icon[type];
-        if(marker.type != 'ghost'){
+        if(marker.isActive()){
             marker.contextmenu = true;
         }
     },
 
     deleteMidpoints: function(){
         // Remove all midpoint markers
-        var midpoint_type = 'ghost';
         this.layer_markers.eachLayer(function(e){
-            if(e.type == midpoint_type){
+            if(!e.isActive()){
                 this.layer_markers.removeLayer(e);
                 var m = this.array_markers.splice(this.array_markers.indexOf(e), 1);
             }
@@ -227,7 +231,7 @@ Polygon.prototype = {
             newMarkers.push(currMarker);
             prevMarker = currMarker;
 
-            // Midpoint for first and last
+            // Midpoint between first and last marker
             if(i == this.array_markers.length-1 && firstMarker && currMarker){
                 var lastMidpoint = this.buildMidpointMarker(currMarker.getLatLng(), firstMarker.getLatLng());
                 newMarkers.push(lastMidpoint);
@@ -244,7 +248,7 @@ Polygon.prototype = {
     },
 
     onMarkerDragStart: function (e) {
-        e.target.type = "vertex";
+        this.updateMarkerType(e.target, 'vertex')
         this.deleteMidpoints();
         this.drag = true;
     },
@@ -267,9 +271,6 @@ Polygon.prototype = {
 
     onMarkerDrag: function(e) {
         var self = this;
-
-        this.updateMarkerType(e.target, 'vertex')
-
         if (self.array_markers.length > 1) { 
             var id = e.target._leaflet_id;
             var latlng = e.target.getLatLng();

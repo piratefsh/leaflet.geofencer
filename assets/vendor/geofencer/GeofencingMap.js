@@ -7,7 +7,7 @@ var GeofencingMap = function GeofencingMap(id){
 // Instance methods
 GeofencingMap.prototype = {
     init : function init(){
-        var osmUrl = 'http://192.168.2.86:8888/Sites/googTiles/{z}/{x}/{y}.png';
+        var osmUrl = 'http://192.168.2.86:8888/Sites/Tiles/{z}/{x}/{y}.png';
         
 
         osmUrl = 'http://{s}.tiles.mapbox.com/v3/piratefsh.jl6ae25j/{z}/{x}/{y}.png';
