@@ -1,6 +1,5 @@
     
 var Polygon = function Polygon(map, name){
-    var img_dir = 'assets/vendor/geofencer/images/';
     this.name           = name;
     this.id_counter     = 0;
     this.map            = map;
@@ -10,6 +9,10 @@ var Polygon = function Polygon(map, name){
     this.drag           = false;
     this.drag_end       = false;
     this.override_map_click = false;
+
+
+    // Map icons
+    var img_dir = 'assets/vendor/geofencer/images/'
     this.icon = {
         vertex: L.icon({
             iconUrl: img_dir + 'vertex.png',
@@ -25,15 +28,17 @@ var Polygon = function Polygon(map, name){
         })
     };
 
+    // Create marker on map click when polygon is not solid yet
     this.map.on('click', function(e){
         if(!this.isSolid() && !(this.drag || this.override_map_click)){
-            this.create_marker(e.latlng);
+            this.createMarker(e.latlng);
         }
         else {
             this.override_map_click = false;
         }
     }, this);
 
+    // Add context menu to map
     this.map.contextmenu.insertItem({
         text: 'Show Coordinates',
         callback: function(e){
@@ -43,9 +48,6 @@ var Polygon = function Polygon(map, name){
     });
 }
 
-// folder of marker images
-var img_dir = 'assets/vendor/geofencer/images/'
-
 Polygon.prototype = {
     setName: function(name){
         this.name = name;
@@ -53,6 +55,7 @@ Polygon.prototype = {
             this.popup.setContent(name);
         }
     },
+
     clearAll: function(){
         this.map.removeLayer(this.polygon_layer);
         this.layer_markers.clearLayers();
@@ -61,6 +64,7 @@ Polygon.prototype = {
         };
         this.override_map_click = false;
     },
+
     getCoordinates: function(){
         var coords = new Array();
         var curr;
@@ -73,14 +77,17 @@ Polygon.prototype = {
         }
         return coords;
     },
+
     isSolid: function(){
         // More than 2 vertices
         return this.array_markers.length/2 > 2;
     },
+
     onChange: function(f){
         this.polygon_layer.on('change', f)
     },
-    make_marker: function(latlng, type){
+
+    makeMarker: function(latlng, type){
         var id = "marker_" + this.id_counter++;
 
         var marker = new L.marker(latlng, {
@@ -91,7 +98,7 @@ Polygon.prototype = {
                 text: 'Delete',
                 index: 0,
                 callback: function(e){
-                    this.delete_marker(marker);
+                    this.deleteMarker(marker);
                 },
                 context: this
             }]
@@ -113,7 +120,7 @@ Polygon.prototype = {
         return marker;
     },
 
-    make_midpoint_marker: function(aLatLng, bLatLng){
+    makeMidpointMarker: function(aLatLng, bLatLng){
         if(!aLatLng || !bLatLng){
             return null;
         }
@@ -125,25 +132,52 @@ Polygon.prototype = {
         midLng = (aLatLng.lng + bLatLng.lng)/2.0;
         midLatLng = L.latLng(midLat, midLng);
 
-        return this.make_marker(midLatLng, 'ghost');
+        return this.makeMarker(midLatLng, 'ghost');
     },
 
-    add_marker_to_layer: function(marker){
+    addMarkerToLayer: function(marker){
         marker.addTo(this.layer_markers),
         this.array_markers.push(marker);
     },
 
-    create_marker: function (latlng, type) {
+    createMarker: function (latlng, type) {
         if(!type){
             type = 'vertex';
         }
-        var marker = this.make_marker(latlng, type)
+        var marker = this.makeMarker(latlng, type)
 
-        this.add_marker_to_layer(marker);
-        this.update_midpoints();
+        this.addMarkerToLayer(marker);
+        this.updateMidpoints();
 
         if (this.array_markers.length > 1) {
-            this.create_polygon();
+            this.createPolygon();
+        }
+    },
+
+    deleteMarker: function (marker) {
+        // don't delete ghost markers
+        if(marker.type == 'ghost'){
+            return;
+        }
+
+        var self = this;
+
+        if (self.array_markers.length > 1) {
+            var marker = marker;
+            var id = marker._leaflet_id;
+
+            // Find and remove marker from array
+            for (var i = 0; i < self.array_markers.length; i++) {
+                if (self.array_markers[i]._leaflet_id == id) {
+                    self.array_markers.splice(i, 1);
+                    break;
+                }
+            }
+
+            // Remove marker from later and redraw polygon
+            this.layer_markers.removeLayer(marker);
+            this.updateMidpoints();
+            self.createPolygon();
         }
     },
 
@@ -155,7 +189,7 @@ Polygon.prototype = {
         }
     },
 
-    remove_midpoints: function(){
+    removeMidpoints: function(){
         // Remove all midpoint markers
         var midpoint_type = 'ghost';
         this.layer_markers.eachLayer(function(e){
@@ -169,9 +203,9 @@ Polygon.prototype = {
         }, this);
     },
 
-    update_midpoints: function(){
+    updateMidpoints: function(){
         // Remove midpoints
-        this.remove_midpoints();
+        this.removeMidpoints();
 
         // Add new midpoints
         var prevMarker, prevLatLng, currMarker, currLatLng, midMarker, firstMarker;
@@ -186,7 +220,7 @@ Polygon.prototype = {
             else{
                 prevLatLng = prevMarker.getLatLng();
                 currLatLng = currMarker.getLatLng();
-                midMarker = this.make_midpoint_marker(prevLatLng, currLatLng);
+                midMarker = this.makeMidpointMarker(prevLatLng, currLatLng);
                 newMarkers.push(midMarker);
             }
 
@@ -195,7 +229,7 @@ Polygon.prototype = {
 
             // Midpoint for first and last
             if(i == this.array_markers.length-1 && firstMarker && currMarker){
-                var lastMidpoint = this.make_midpoint_marker(currMarker.getLatLng(), firstMarker.getLatLng());
+                var lastMidpoint = this.makeMidpointMarker(currMarker.getLatLng(), firstMarker.getLatLng());
                 newMarkers.push(lastMidpoint);
             }
         }
@@ -203,15 +237,15 @@ Polygon.prototype = {
         this.layer_markers.clearLayers();
         this.array_markers = new Array();
         for(var i in newMarkers){
-            this.add_marker_to_layer(newMarkers[i]);
+            this.addMarkerToLayer(newMarkers[i]);
         }
 
-        this.create_polygon();
+        this.createPolygon();
     },
 
     onMarkerDragStart: function (e) {
         e.target.type = "vertex";
-        this.remove_midpoints();
+        this.removeMidpoints();
         this.drag = true;
     },
 
@@ -220,7 +254,7 @@ Polygon.prototype = {
         this.override_map_click = true;
         this.drag_end = true;
 
-        this.update_midpoints();
+        this.updateMidpoints();
     },
 
     onMarkerMouseOver: function (e) {
@@ -244,7 +278,7 @@ Polygon.prototype = {
                 if (self.array_markers[i]._leaflet_id == id) {
                     self.array_markers[i].setLatLng(latlng);
 
-                    self.create_polygon();
+                    self.createPolygon();
                     break;
                 }
             }
@@ -255,34 +289,7 @@ Polygon.prototype = {
     
     },
 
-    delete_marker: function (marker) {
-        // don't delete ghost markers
-        if(marker.type == 'ghost'){
-            return;
-        }
-
-        var self = this;
-
-        if (self.array_markers.length > 1) {
-            var marker = marker;
-            var id = marker._leaflet_id;
-
-            // Find and remove marker from array
-            for (var i = 0; i < self.array_markers.length; i++) {
-                if (self.array_markers[i]._leaflet_id == id) {
-                    self.array_markers.splice(i, 1);
-                    break;
-                }
-            }
-
-            // Remove marker from later and redraw polygon
-            this.layer_markers.removeLayer(marker);
-            this.update_midpoints();
-            self.create_polygon();
-        }
-    },
-
-    create_polygon: function () {
+    createPolygon: function () {
         var polygon_coords = new Array();
 
         var prev, curr, mid;

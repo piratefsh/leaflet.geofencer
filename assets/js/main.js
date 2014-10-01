@@ -18,7 +18,7 @@ $(function() {
         for(var i=0;i<splitLatLng.length;i++){
             var latlng = splitLatLng[i].trim().substring(1, splitLatLng[i].length-1).split(",");
             if(latlng.length > 1){
-                polygon.create_marker(L.latLng(latlng[0], latlng[1]));
+                polygon.createMarker(L.latLng(latlng[0], latlng[1]));
             }
         }
 
