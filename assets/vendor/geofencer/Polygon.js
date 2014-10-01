@@ -124,9 +124,9 @@ Polygon.prototype = {
             return marker.type != 'inactive';
         }
 
-        var popUpContent = "<span>id: {{id}} <span>";
+        var popUpContent = "<span>{{coords}}<span>";
         
-        popUpContent = popUpContent.replace(/{{id}}/g, id);
+        popUpContent = popUpContent.replace(/{{coords}}/g, latlng.lat + ", " + latlng.lng);
         marker.bindPopup(popUpContent);
         return marker;
     },
