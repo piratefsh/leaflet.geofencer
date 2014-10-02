@@ -63,12 +63,17 @@ Polygon.prototype = {
     },
 
     clearAll: function(){
+        // Clear layers
         var clear = this.polygon_layer? this.map.removeLayer(this.polygon_layer) : this.map.removeLayer(this.line_layer);
         this.layer_markers.clearLayers();
 
+        // Clear markers
         while(this.array_markers.length > 0){
             this.array_markers.pop();
         };
+
+        // Close popup
+        this.map.closePopup();
 
         this.shapeClosed = false;
         this.override_map_click = false;
