@@ -36,18 +36,22 @@ $(function() {
             }
         })
 
+        $('#new-polygon').click(function(){
+            polygon.createNewPolygon();
+        });
+
         $('#clear-all').click(function(){
-            polygon.clearAll();
-        })
+            polygon.deleteAllPolygons();
+        });
+
         $('#update-polygon').click(function(){
             polygon.setName($('#polygon-name').val());
             polygon.panToPolygon();
-        })
+        });
     }
 
     function updateCoords(e){
         var multi_coords = polygon.getPolygonCoordinates();
-        console.log(multi_coords)
         $('.coords').empty();
 
         for (var j in multi_coords){

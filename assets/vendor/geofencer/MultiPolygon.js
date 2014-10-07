@@ -1,7 +1,16 @@
 var MultiPolygon = function MultiPolygon(map, name){
-    this._polygons = new Array();
-    this.name = name;
     this._map = map;
+    this.name = name;
+    this._polygons = new Array();
+    this._curr_polygon = -1;
+
+    // Create marker for current active polygon
+    this._map.on('click', function(e){
+        var curr_polygon = this._polygons[this._curr_polygon];
+        if(curr_polygon && !curr_polygon.isSolid()){
+            this._polygons[this._curr_polygon].createMarker(e.latlng);
+        }
+    }, this);
 }
 
 MultiPolygon.prototype = {
@@ -19,8 +28,8 @@ MultiPolygon.prototype = {
         for(var i in coords){
             p.createMarker(coords[i]);
         }
-
         this._polygons.push(p);
+        this._curr_polygon = this._polygons.length - 1;
     },
 
     // Return coordinates for each Polygon in double array
@@ -28,8 +37,23 @@ MultiPolygon.prototype = {
         var coords = new Array();
         for(var i in this._polygons){
             var p = this._polygons[i];
-            coords.push(p.getCoordinates())
+            coords.push(p.getCoordinates());
+
+            console.log(p.array_markers)
         }
         return coords;
+    },
+
+    // Delete all Polygons
+    deleteAllPolygons: function(){
+        for(var i in this._polygons){
+            this._polygons[i].clearAll();
+        }
+    },
+
+    // Create new Polygon
+    createNewPolygon: function(){
+        this.addPolygon();
+        this._curr_polygon = this._polygons.length - 1;
     }
 }

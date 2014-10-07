@@ -27,25 +27,6 @@ var Polygon = function Polygon(map, name){
             iconSize: [15, 15],
         })
     };
-
-    // Create marker on map click when polygon is not solid yet
-    this.map.on('click', function(e){
-        if(!this.isSolid() && !(this.drag || this.override_map_click)){
-            this.createMarker(e.latlng);
-        }
-        else {
-            this.override_map_click = false;
-        }
-    }, this);
-
-    // Add context menu to map
-    this.map.contextmenu.insertItem({
-        text: 'Show Coordinates',
-        callback: function(e){
-            L.popup().setContent(e.latlng.lat + ", " + e.latlng.lng).setLatLng(e.latlng).openOn(this.map);
-        },
-        context: this
-    });
 }
 
 Polygon.prototype = {
@@ -101,7 +82,7 @@ Polygon.prototype = {
     },
 
     buildMarker: function(latlng, type){
-        var id = "marker_" + this.id_counter++;
+        var id = this.name + "_marker_" + this.id_counter++;
 
         var marker = new L.marker(latlng, {
             icon: this.icon[type],
