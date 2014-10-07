@@ -11,19 +11,22 @@ $(function() {
     function initialize() {
         // Create map and polygon for map
         map     = new GeofencingMap('map').map;
-        polygon = new Polygon(map, $('#polygon-name').val());
+        polygon = new MultiPolygon(map, $('#polygon-name').val());
 
+        var coords = new Array();
         // Add markers for polygon coordinates
         var splitLatLng = totalLatLng.split("|");
         for(var i = 0; i < splitLatLng.length; i++){
             var latlng = splitLatLng[i].trim().substring(1, splitLatLng[i].length-1).split(",");
             if(latlng.length > 1){
-                polygon.createMarker(L.latLng(latlng[0], latlng[1]));
+               coords.push(L.latLng(latlng[0], latlng[1]));
             }
         }
 
-        polygon.openPopup();
-        polygon.panToPolygon();
+        polygon.addPolygon(coords)
+
+        // polygon.openPopup();
+        // polygon.panToPolygon();
         
         // Update coordinates displayed on 'C' press
         updateCoords();
@@ -43,12 +46,17 @@ $(function() {
     }
 
     function updateCoords(e){
-        var coords = polygon.getCoordinates();
+        var multi_coords = polygon.getPolygonCoordinates();
+        console.log(multi_coords)
         $('.coords').empty();
 
-        for (var i in coords){
-            var c = $('<li>').html(coords[i].lat + ", " + coords[i].lng);
-            $('.coords').append(c);
+        for (var j in multi_coords){
+            var coords = multi_coords[j];
+            for (var i in coords){
+                var c = $('<li>').html(coords[i].lat + ", " + coords[i].lng);
+                $('.coords').append(c);
+            }
+            $('.coords').append('<hr/>');
         }
     }
 });
