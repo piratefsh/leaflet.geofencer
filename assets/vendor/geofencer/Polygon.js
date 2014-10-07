@@ -188,7 +188,7 @@ Polygon.prototype = {
             // Remove marker from later and redraw polygon
             this._layers.removeLayer(marker);
             this.updateMidpoints();
-            this.createPolygon();
+            this.updateShapes();
         }
     },
 
