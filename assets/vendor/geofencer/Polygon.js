@@ -3,8 +3,8 @@ var Polygon = function Polygon(map, name){
     this.name           = name;
     this.id_counter     = 0;
     this.map            = map;
-    this.array_markers  = new Array();
-    this.layer_markers  = new L.LayerGroup().addTo(this.map);
+    this._markers  = new Array();
+    this._layers  = new L.LayerGroup().addTo(this.map);
     this.drag           = false;
     this.drag_end       = false;
     this.override_map_click = false;
@@ -46,11 +46,11 @@ Polygon.prototype = {
     clearAll: function(){
         // Clear layers
         var clear = this.polygon_layer? this.map.removeLayer(this.polygon_layer) : this.map.removeLayer(this.line_layer);
-        this.layer_markers.clearLayers();
+        this._layers.clearLayers();
 
         // Clear markers
-        while(this.array_markers.length > 0){
-            this.array_markers.pop();
+        while(this._markers.length > 0){
+            this._markers.pop();
         };
 
         // Close popup
@@ -63,8 +63,8 @@ Polygon.prototype = {
     getCoordinates: function(){
         var coords = new Array();
         var curr;
-        for(var i in this.array_markers){
-            curr = this.array_markers[i];
+        for(var i in this._markers){
+            curr = this._markers[i];
 
             if(curr.isActive()){
                 coords.push(curr.getLatLng());
@@ -135,8 +135,8 @@ Polygon.prototype = {
     },
 
     addMarkerToLayer: function(marker){
-        marker.addTo(this.layer_markers),
-        this.array_markers.push(marker);
+        marker.addTo(this._layers),
+        this._markers.push(marker);
     },
 
     equalMarkers: function(m1, m2){
@@ -162,7 +162,7 @@ Polygon.prototype = {
         this.addMarkerToLayer(marker);
         this.updateMidpoints();
 
-        if (this.array_markers.length > 1) {
+        if (this._markers.length > 1) {
             this.updateShapes();
         }
     },
@@ -173,24 +173,22 @@ Polygon.prototype = {
             return;
         }
 
-        var self = this;
-
-        if (self.array_markers.length > 1) {
+        if (this._markers.length > 1) {
             var marker = marker;
             var id = marker._leaflet_id;
 
             // Find and remove marker from array
-            for (var i = 0; i < self.array_markers.length; i++) {
-                if (self.array_markers[i]._leaflet_id == id) {
-                    self.array_markers.splice(i, 1);
+            for (var i = 0; i < this._markers.length; i++) {
+                if (this._markers[i]._leaflet_id == id) {
+                    this._markers.splice(i, 1);
                     break;
                 }
             }
 
             // Remove marker from later and redraw polygon
-            this.layer_markers.removeLayer(marker);
+            this._layers.removeLayer(marker);
             this.updateMidpoints();
-            self.createPolygon();
+            this.createPolygon();
         }
     },
 
@@ -204,10 +202,10 @@ Polygon.prototype = {
 
     deleteMidpoints: function(){
         // Remove all midpoint markers
-        this.layer_markers.eachLayer(function(e){
+        this._layers.eachLayer(function(e){
             if(!e.isActive()){
-                this.layer_markers.removeLayer(e);
-                var m = this.array_markers.splice(this.array_markers.indexOf(e), 1);
+                this._layers.removeLayer(e);
+                var m = this._markers.splice(this._markers.indexOf(e), 1);
             }
             else{
                 var m = e;
@@ -227,8 +225,8 @@ Polygon.prototype = {
         var prevMarker, prevLatLng, currMarker, currLatLng, midMarker, firstMarker;
         var newMarkers = new Array();
 
-        for(var i = 0; i < this.array_markers.length; i++){
-            currMarker = this.array_markers[i];
+        for(var i = 0; i < this._markers.length; i++){
+            currMarker = this._markers[i];
             if(!prevMarker){
                 prevMarker = currMarker;
                 firstMarker = currMarker;
@@ -244,14 +242,14 @@ Polygon.prototype = {
             prevMarker = currMarker;
 
             // Midpoint between first and last marker
-            if(i == this.array_markers.length-1 && firstMarker && currMarker){
+            if(i == this._markers.length-1 && firstMarker && currMarker){
                 var lastMidpoint = this.buildMidpointMarker(currMarker.getLatLng(), firstMarker.getLatLng());
                 newMarkers.push(lastMidpoint);
             }
         }
 
-        this.layer_markers.clearLayers();
-        this.array_markers = new Array();
+        this._layers.clearLayers();
+        this._markers = new Array();
         for(var i in newMarkers){
             this.addMarkerToLayer(newMarkers[i]);
         }
@@ -281,16 +279,15 @@ Polygon.prototype = {
     },
 
     onMarkerDrag: function(e) {
-        var self = this;
-        if (self.array_markers.length > 1) { 
+        if (this._markers.length > 1) { 
             var id = e.target._leaflet_id;
             var latlng = e.target.getLatLng();
 
-            for (var i = 0; i < self.array_markers.length; i++) {
-                if (self.array_markers[i]._leaflet_id == id) {
-                    self.array_markers[i].setLatLng(latlng);
+            for (var i = 0; i < this._markers.length; i++) {
+                if (this._markers[i]._leaflet_id == id) {
+                    this._markers[i].setLatLng(latlng);
 
-                    self.updateShapes();
+                    this.updateShapes();
                     break;
                 }
             }
@@ -298,7 +295,7 @@ Polygon.prototype = {
     },
 
     onMarkerClick: function(e){
-        if(this.equalMarkers(this.array_markers[0], e.target)){
+        if(this.equalMarkers(this._markers[0], e.target)){
             this.shapeClosed = true;
             this.updateMidpoints();
             this.updateShapes();
@@ -308,8 +305,8 @@ Polygon.prototype = {
     createLine: function(){
         var line_coords = new Array();
         var curr;
-        for(var i in this.array_markers){
-            curr = this.array_markers[i]
+        for(var i in this._markers){
+            curr = this._markers[i]
             if(curr.isActive){
                 line_coords.push(curr.getLatLng());
             }
@@ -331,8 +328,8 @@ Polygon.prototype = {
         var polygon_coords = new Array();
 
         var prev, curr, mid;
-        for (var i = 0; i < this.array_markers.length; i++) {
-            curr = this.array_markers[i].getLatLng();
+        for (var i = 0; i < this._markers.length; i++) {
+            curr = this._markers[i].getLatLng();
             polygon_coords.push(curr);
         }
 
@@ -382,22 +379,22 @@ Polygon.prototype = {
     },
 
     updateMarkers: function(e){
-        if (this.layer_markers != null) {
+        if (this._layers != null) {
             var polygon_coords = e.target._latlngs;
 
             var new_markers = new Array();
             var curr;
             for (var i = 0; i < polygon_coords.length; i++) {
-                curr = this.array_markers[i];
+                curr = this._markers[i];
                 curr._latlng = polygon_coords[i];
                 new_markers.push(curr);
             }
 
             // Remove old markers and add new ones
-            this.layer_markers.clearLayers();
+            this._layers.clearLayers();
             while(new_markers.length > 0){
                 curr = new_markers.pop()
-                curr.addTo(this.layer_markers);
+                curr.addTo(this._layers);
             }
         }
     },
@@ -407,8 +404,8 @@ Polygon.prototype = {
     },
 
     onPolygonDragStart: function (e) {
-        if (this.layer_markers) {
-            this.layer_markers.clearLayers();
+        if (this._layers) {
+            this._layers.clearLayers();
         }
         this.drag = true;
     },

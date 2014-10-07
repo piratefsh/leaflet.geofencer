@@ -38,8 +38,6 @@ MultiPolygon.prototype = {
         for(var i in this._polygons){
             var p = this._polygons[i];
             coords.push(p.getCoordinates());
-
-            console.log(p.array_markers)
         }
         return coords;
     },
