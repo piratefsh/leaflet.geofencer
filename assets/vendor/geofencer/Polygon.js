@@ -363,7 +363,16 @@ Polygon.prototype = {
         {   
             color: '#810541',
             fillColor: '#D462FF',
-            fillOpacity: 0.5
+            fillOpacity: 0.5,
+            contextmenu: true,
+            contextmenuItems: [{
+                text: 'Delete Area',
+                index: 0,
+                callback: function(e){
+                    this.clearAll();
+                },
+                context: this
+            }]
         });
 
         this.polygon_layer.dragging = new L.Handler.PolyDrag(this.polygon_layer);  
