@@ -27,6 +27,8 @@ var Polygon = function Polygon(map, name){
             iconSize: [15, 15],
         })
     };
+
+    this._setVertexCursor(true);
 }
 
 Polygon.prototype = {
@@ -296,6 +298,7 @@ Polygon.prototype = {
 
     onMarkerClick: function(e){
         if(this.equalMarkers(this._markers[0], e.target)){
+            this._setVertexCursor(false);
             this.shapeClosed = true;
             this.updateMidpoints();
             this.updateShapes();
@@ -414,5 +417,14 @@ Polygon.prototype = {
         this.updateMarkers(e);
         this.drag = false;
         this.override_map_click = true;
+    },
+
+    _setVertexCursor: function(show){
+        if(show){
+            $('.geofencer-map').css('cursor', 'url(assets/vendor/geofencer/images/vertex-cursor.png)7 7, auto');
+        }
+        else{
+            $('.geofencer-map').css('cursor', '')
+        }
     }
 }

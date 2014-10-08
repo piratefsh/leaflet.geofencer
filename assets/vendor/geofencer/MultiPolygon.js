@@ -24,6 +24,8 @@ MultiPolygon.prototype = {
 
     // Create polygon out of array of coordinates
     addPolygon: function(coords){
+
+        // Show new polygon cursor
         var p = new Polygon(this._map, 'polygon-' + this._polygons.length);
         for(var i in coords){
             p.createMarker(coords[i]);
@@ -53,5 +55,6 @@ MultiPolygon.prototype = {
     createNewPolygon: function(){
         this.addPolygon();
         this._curr_polygon = this._polygons.length - 1;
-    }
+    },
+
 }
