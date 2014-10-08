@@ -51,7 +51,8 @@ Polygon.prototype = {
 
     clearAll: function(){
         // Clear layers
-        var clear = this.polygon_layer? this.map.removeLayer(this.polygon_layer) : this.map.removeLayer(this.line_layer);
+        var clear = this.polygon_layer? this.map.removeLayer(this.polygon_layer) : null;
+        clear = this.line_layer? this.map.removeLayer(this.line_layer) : null
         this._layers.clearLayers();
 
         // Clear markers
