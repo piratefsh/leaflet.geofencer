@@ -24,6 +24,10 @@ MultiPolygon.prototype = {
 
     // Create polygon out of array of coordinates
     addPolygon: function(coords){
+        // If previous new polygon not created yet, ignore
+        if(this._polygons[this._curr_polygon] && this._polygons[this._curr_polygon].getNumVertices() < 1){
+            return;
+        }
 
         // Show new polygon cursor
         var p = new Polygon(this._map, 'polygon-' + this._polygons.length);

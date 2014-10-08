@@ -32,6 +32,10 @@ var Polygon = function Polygon(map, name){
 }
 
 Polygon.prototype = {
+    getNumVertices: function(){
+        return this._markers.length/2
+    },
+
     setName: function(name){
         this.name = name;
         if(this.popup){
