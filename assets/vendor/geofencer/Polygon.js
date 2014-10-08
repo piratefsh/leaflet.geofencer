@@ -84,7 +84,12 @@ Polygon.prototype = {
     },
 
     enoughPointsToBeSolid: function(){
-        return this._markers.length/2 >= 3;
+        if(this.isSolid()){
+            return this._markers.length/2 >= 3;
+        } 
+        else{
+            return this._markers.length >= 3
+        }
     },
 
     isTriangle: function(){
@@ -165,7 +170,6 @@ Polygon.prototype = {
 
         return false;
     },
-
 
     createMarker: function (latlng, type) {
         if(!type){
@@ -314,10 +318,7 @@ Polygon.prototype = {
 
     onMarkerClick: function(e){
         if(this.equalMarkers(this._markers[0], e.target)){
-            this._setVertexCursor(false);
-            this.shapeClosed = true;
-            this.updateMidpoints();
-            this.updateShapes();
+            this.closeShape();
         }  
     },
 
@@ -418,6 +419,15 @@ Polygon.prototype = {
                 curr = new_markers.pop()
                 curr.addTo(this._layers);
             }
+        }
+    },
+
+    closeShape: function(){
+        if(this.enoughPointsToBeSolid()){
+            this._setVertexCursor(false);
+            this.shapeClosed = true;
+            this.updateMidpoints();
+            this.updateShapes();
         }
     },
 

@@ -23,7 +23,7 @@ MultiPolygon.prototype = {
     },
 
     // Create polygon out of array of coordinates
-    addPolygon: function(coords){
+    addPolygon: function(coords, closeShape){
         // If previous new polygon not created yet, ignore
         if(this._polygons[this._curr_polygon] && this._polygons[this._curr_polygon].getNumVertices() < 1){
             return;
@@ -34,6 +34,11 @@ MultiPolygon.prototype = {
         for(var i in coords){
             p.createMarker(coords[i]);
         }
+
+        if(closeShape){
+            p.closeShape(); 
+        }
+
         this._polygons.push(p);
         this._curr_polygon = this._polygons.length - 1;
     },

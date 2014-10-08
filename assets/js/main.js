@@ -23,7 +23,7 @@ $(function() {
             }
         }
 
-        polygon.addPolygon(coords)
+        polygon.addPolygon(coords, true)
 
         // polygon.openPopup();
         // polygon.panToPolygon();
