@@ -79,6 +79,14 @@ Polygon.prototype = {
         return this.shapeClosed;
     },
 
+    enoughPointsToBeSolid: function(){
+        return this._markers.length/2 >= 3;
+    },
+
+    isTriangle: function(){
+        return this._markers.length/2 == 3;
+    },
+
     onChange: function(f){
         this.polygon_layer.on('change', f)
     },
@@ -170,12 +178,12 @@ Polygon.prototype = {
     },
 
     deleteMarker: function (marker) {
-        // Don't delete inactive markers
-        if(!marker.isActive()){
+        // Don't delete inactive markers or triangles (minimum polygon)
+        if(!marker.isActive() || this.isTriangle()){
             return;
         }
 
-        if (this._markers.length > 1) {
+        if (this._markers.length > 0) {
             var marker = marker;
             var id = marker._leaflet_id;
 
@@ -186,11 +194,15 @@ Polygon.prototype = {
                     break;
                 }
             }
-
+            // If no longer a solid, set flag
+            if(!this.enoughPointsToBeSolid()){
+                this.shapeClosed = false;
+            }
             // Remove marker from later and redraw polygon
             this._layers.removeLayer(marker);
             this.updateMidpoints();
             this.updateShapes();
+            
         }
     },
 
@@ -219,7 +231,7 @@ Polygon.prototype = {
         // Remove midpoints
         this.deleteMidpoints();
 
-        if(!this.isSolid()){
+        if(!this.isSolid() || this._markers.length < 2){
             return;
         }
 
@@ -369,6 +381,9 @@ Polygon.prototype = {
 
     updateShapes: function(){
         if(!this.isSolid()){
+            if(this.polygon_layer){
+                this.map.removeLayer(this.polygon_layer);
+            }
             this.createLine();
         }
         else{
@@ -421,7 +436,7 @@ Polygon.prototype = {
 
     _setVertexCursor: function(show){
         if(show){
-            $('.geofencer-map').css('cursor', 'url(assets/vendor/geofencer/images/vertex-cursor.png)7 7, auto');
+            $('.geofencer-map').css('cursor', 'url(assets/vendor/geofencer/images/vertex-cursor.png) 7 7, auto');
         }
         else{
             $('.geofencer-map').css('cursor', '')

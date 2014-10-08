@@ -39,7 +39,9 @@ MultiPolygon.prototype = {
         var coords = new Array();
         for(var i in this._polygons){
             var p = this._polygons[i];
-            coords.push(p.getCoordinates());
+            if(p.isSolid()){
+               coords.push(p.getCoordinates());
+            }
         }
         return coords;
     },
