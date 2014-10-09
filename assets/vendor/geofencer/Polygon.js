@@ -1,4 +1,4 @@
-    
+
 var Polygon = function Polygon(map, name){
     this.name           = name;
     this.id_counter     = 0;
@@ -384,6 +384,10 @@ Polygon.prototype = {
         this.polygon_layer.on('dragend', this.onPolygonDragEnd, this);
         this.polygon_layer.dragging.enable();
 
+        if(this.create_polygon_callback){
+            this.create_polygon_callback(this);
+        }
+
     },
 
     openPopup: function(){
@@ -441,6 +445,10 @@ Polygon.prototype = {
         }
     },
 
+    setOnPolygonCreate: function(f){
+        this.create_polygon_callback = f;
+    },
+
     onPolygonClick: function(e){
         this.openPopup();
     },
@@ -480,7 +488,7 @@ Polygon.prototype = {
 
     // Returns true if polygon self-intersects. 
     // From http://engblog.nextdoor.com/post/86430627239/fast-polygon-self-intersection-detection-in-javascript
-    _selfIntersects: function(){
+    selfIntersects: function(){
         var coords = this._thisToJTS();
         var geometryFactory = new jsts.geom.GeometryFactory();
         var shell = geometryFactory.createLinearRing(coords);

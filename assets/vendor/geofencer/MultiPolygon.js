@@ -39,6 +39,7 @@ MultiPolygon.prototype = {
             p.closeShape(); 
         }
 
+        p.setOnPolygonCreate(this.create_polygons_callback)
         this._polygons.push(p);
         this._curr_polygon = this._polygons.length - 1;
     },
@@ -67,5 +68,15 @@ MultiPolygon.prototype = {
         this.addPolygon();
         this._curr_polygon = this._polygons.length - 1;
     },
+
+    setCreatePolygonsCallback: function(f){
+        this.create_polygons_callback = f;
+        var polys = this.getPolygons();
+
+        for (var i in polys){
+            var p = polys[i];
+            p.setOnPolygonCreate(f);
+        }
+    }
 
 }

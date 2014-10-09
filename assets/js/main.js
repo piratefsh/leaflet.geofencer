@@ -24,6 +24,17 @@ $(function() {
         }
 
         polygon.addPolygon(coords, true)
+        polygon.setCreatePolygonsCallback(function(p){
+            updateCoords();
+            console.log(p.selfIntersects())
+            if(p.selfIntersects()){
+                $('.'+p.name).css('color', 'red')
+            }
+            else{
+                $('.'+p.name).css('color', 'black')
+
+            }
+        })
 
         // polygon.openPopup();
         // polygon.panToPolygon();
@@ -51,10 +62,13 @@ $(function() {
     }
 
     function updateCoords(e){
+        var polys = polygon.getPolygons();
         var multi_coords = polygon.getPolygonCoordinates();
         $('.coords').empty();
 
         for (var j in multi_coords){
+            var name = $('<h3>' + polys[j].name + '</h3>').addClass(polys[j].name);
+            $('.coords').append(name);
             var coords = multi_coords[j];
             for (var i in coords){
                 var c = $('<li>').html(coords[i].lat + ", " + coords[i].lng);
