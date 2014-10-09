@@ -77,6 +77,19 @@ MultiPolygon.prototype = {
             var p = polys[i];
             p.setOnPolygonCreate(f);
         }
+    },
+
+    // Returns array of self intersecting polygons
+    selfIntersectingPolygons: function(){
+        var polygons = new Array();
+
+        for(var i in this._polygons){
+            if(this._polygons[i].selfIntersects()){
+                polygons.push(this._polygons[i]);
+            }
+        }
+
+        return polygons;
     }
 
 }
