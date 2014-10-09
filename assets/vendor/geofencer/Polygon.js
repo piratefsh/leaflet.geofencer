@@ -9,7 +9,7 @@ var Polygon = function Polygon(map, name){
     this.drag_end       = false;
     this.override_map_click = false;
     this.shapeClosed         = false; //line has been joined with start
-
+    this.polygon_layer  = null;
 
     // Map icons
     var img_dir = 'assets/vendor/geofencer/images/'
@@ -465,5 +465,42 @@ Polygon.prototype = {
         else{
             $('.geofencer-map').css('cursor', '')
         }
+    },
+
+    _thisToJTS: function(){
+        var jtsCoords = new Array();
+        var coords = this.getCoordinates();
+        for(var i = 0; i < coords.length; i++){
+            var curr = coords[i];
+            jtsCoords.push(new jsts.geom.Coordinate(curr.lat, curr.lng));
+        }
+
+        return jtsCoords;
+    },
+
+    // Returns true if polygon self-intersects. 
+    // From http://engblog.nextdoor.com/post/86430627239/fast-polygon-self-intersection-detection-in-javascript
+    _selfIntersects: function(){
+        var coords = this._thisToJTS();
+        var geometryFactory = new jsts.geom.GeometryFactory();
+        var shell = geometryFactory.createLinearRing(coords);
+        var jstsPolygon = geometryFactory.createPolygon(shell);
+
+        var validator = new jsts.operation.IsSimpleOp(jstsPolygon);
+        if(validator.isSimpleLinearGeometry(jstsPolygon)){
+            return;
+        }
+
+        var res = new Array();
+        var graph = new jsts.geomgraph.GeometryGraph(0, jstsPolygon);
+        var cat = new jsts.operation.valid.ConsistentAreaTester(graph);
+        var r = cat.isNodeConsistentArea();
+
+        if(!r){
+            var pt = cat.getInvalidPoint();
+            res.push([pt.x, pt.y])
+        }
+
+        return res? res.length > 0 : false;
     }
 }
