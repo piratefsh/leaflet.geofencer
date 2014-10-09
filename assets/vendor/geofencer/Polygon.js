@@ -482,6 +482,8 @@ Polygon.prototype = {
             var curr = coords[i];
             jtsCoords.push(new jsts.geom.Coordinate(curr.lat, curr.lng));
         }
+        // push last coord to close poly
+        jtsCoords.push(new jsts.geom.Coordinate(coords[0].lat, coords[0].lng));
 
         return jtsCoords;
     },
@@ -496,7 +498,7 @@ Polygon.prototype = {
 
         var validator = new jsts.operation.IsSimpleOp(jstsPolygon);
         if(validator.isSimpleLinearGeometry(jstsPolygon)){
-            return;
+            return false;
         }
 
         var res = new Array();
@@ -509,6 +511,6 @@ Polygon.prototype = {
             res.push([pt.x, pt.y])
         }
 
-        return res? res.length > 0 : false;
+        return res.length > 0;
     }
 }
