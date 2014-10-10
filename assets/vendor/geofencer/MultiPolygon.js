@@ -3,6 +3,7 @@ var MultiPolygon = function MultiPolygon(map, name){
     this.name = name;
     this._polygons = new Array();
     this._curr_polygon = -1;
+    this.allow_dragging = false;
 
     // Create marker for current active polygon
     this._map.on('click', function(e){
@@ -40,6 +41,7 @@ MultiPolygon.prototype = {
         }
 
         p.setOnPolygonCreate(this.create_polygons_callback)
+        p.setAllowDragging(this.allow_dragging)
         this._polygons.push(p);
         this._curr_polygon = this._polygons.length - 1;
     },
@@ -78,6 +80,13 @@ MultiPolygon.prototype = {
         for (var i in polys){
             var p = polys[i];
             p.setOnPolygonCreate(f);
+        }
+    },
+
+    setAllowDragging: function(allow){
+        this.allow_dragging = allow;
+        for(var i in this._polygons){
+            this._polygons[i].setAllowDragging(allow);
         }
     },
 

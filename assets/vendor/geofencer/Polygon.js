@@ -10,6 +10,7 @@ var Polygon = function Polygon(map, name){
     this.override_map_click = false;
     this.shapeClosed         = false; //line has been joined with start
     this.polygon_layer  = null;
+    this.allow_dragging = false;
 
     // Map icons
     var img_dir = 'assets/vendor/geofencer/images/'
@@ -382,12 +383,30 @@ Polygon.prototype = {
         this.polygon_layer.on('click', this.onPolygonClick, this);
         this.polygon_layer.on('dragstart', this.onPolygonDragStart, this);
         this.polygon_layer.on('dragend', this.onPolygonDragEnd, this);
-        this.polygon_layer.dragging.enable();
+        
+        if(this.allow_dragging) {
+            this.polygon_layer.dragging.enable();
+        }
 
         if(this.create_polygon_callback){
             this.create_polygon_callback(this);
         }
 
+    },
+
+    setAllowDragging: function(allow){
+        this.allow_dragging = allow;
+        
+        if(!this.polygon_layer){
+            return;
+        }
+
+        if(allow){
+            this.polygon_layer.dragging.enable();
+        }
+        else{
+            this.polygon_layer.dragging.disable();
+        }
     },
 
     openPopup: function(){
