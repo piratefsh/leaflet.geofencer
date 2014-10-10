@@ -17,7 +17,7 @@ GeofencingMap.prototype = {
         var map = new L.map(this.mapId, {
             contextmenu: true,
         });
-        map.setView(new L.LatLng(25.038567638374172, 121.49175156248842), 8);
+        map.setView(new L.LatLng(2.67968661580376,109.16015624999999), 6);
         map.addLayer(osm);
 
         this.map = map;
