@@ -28,8 +28,7 @@ $(function() {
         polygon.addPolygon(coords, true)
         polygon.setCreatePolygonsCallback(updateDetails);
         polygon.setAllowDragging(draggable)
-        // polygon.openPopup();
-        // polygon.panToPolygon();
+        polygon.setEditable(true);
         
         // Update coordinates displayed on 'C' press
         updateCoords();

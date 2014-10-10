@@ -83,6 +83,12 @@ MultiPolygon.prototype = {
         }
     },
 
+    setEditable: function(allow){
+        this.allow_dragging = allow;
+        for(var i in this._polygons){
+            this._polygons[i].setEditable(allow);
+        }
+    }, 
     setAllowDragging: function(allow){
         this.allow_dragging = allow;
         for(var i in this._polygons){

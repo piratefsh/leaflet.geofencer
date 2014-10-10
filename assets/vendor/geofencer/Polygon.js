@@ -531,5 +531,15 @@ Polygon.prototype = {
         }
 
         return res.length > 0;
+    },
+
+    setEditable: function(editable){
+        this.setAllowDragging(editable)
+        if(editable){
+            this.map.addLayer(this._layers)
+        }
+        else{
+            this.map.removeLayer(this._layers)
+        }
     }
 }
