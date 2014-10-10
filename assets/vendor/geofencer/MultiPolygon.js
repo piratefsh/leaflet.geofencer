@@ -61,6 +61,8 @@ MultiPolygon.prototype = {
         for(var i in this._polygons){
             this._polygons[i].clearAll();
         }
+
+        this._polygons = new Array();
     },
 
     // Create new Polygon
