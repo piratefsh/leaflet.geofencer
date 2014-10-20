@@ -3,7 +3,7 @@
 A simple geofencing (polygon-creation) tool built on Leaflet. Check out the demo/index.html for examples.
 
 ## Dependencies
-Check bower.js for specific dependency versions 
+Check bower.json for specific dependency versions 
 
 * [Leaflet](leafletjs.com)
 * [Leaflet.polydrag](https://github.com/snkashis/leaflet.polydrag/tree/handler_fix)
