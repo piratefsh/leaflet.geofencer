@@ -5,7 +5,7 @@
     "Sher Minn Chong <sherminn.chong@gmail.com>"
   ],
   "description": "Geofencing tool for Leaflet. Polygon creation by coordinates.",
-  "main": "src/MultiPolygon.js",
+  "main": "dist/leaflet.geofencer.js",
   "moduleType": [
     "globals"
   ],
