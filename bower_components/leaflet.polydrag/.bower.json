@@ -1,14 +1,13 @@
 {
   "name": "leaflet.polydrag",
   "homepage": "https://github.com/snkashis/leaflet.polydrag",
-  "_release": "0b662e1e79",
+  "_release": "94443abc28",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "0b662e1e792338c8a323e5ad9a6c6eff2c63500a"
+    "type": "commit",
+    "commit": "94443abc28b7612f1ce23f753d4f8307befd9f0d"
   },
   "_source": "git://github.com/snkashis/leaflet.polydrag.git",
-  "_target": "*",
+  "_target": "94443abc28b7612f1ce23f753d4f8307befd9f0d",
   "_originalSource": "snkashis/leaflet.polydrag",
   "_direct": true
 }

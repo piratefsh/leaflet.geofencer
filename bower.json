@@ -29,7 +29,7 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "leaflet": "~0.7.3",
-    "leaflet.polydrag": "snkashis/leaflet.polydrag",
+    "leaflet.polydrag": "snkashis/leaflet.polydrag#94443abc28b7612f1ce23f753d4f8307befd9f0d",
     "leaflet.contextmenu": "aratcliffe/Leaflet.contextmenu",
     "jsts": "~0.14.0"
   }
