@@ -487,7 +487,7 @@ Polygon.prototype = {
 
     _setVertexCursor: function(show){
         if(show){
-            $('.geofencer-map').css('cursor', 'url('+img_dir+'vertex-cursor.png) 7 7, auto');
+            $('.geofencer-map').css('cursor', 'url(' + img_dir + 'vertex-cursor.png) 7 7, auto');
         }
         else{
             $('.geofencer-map').css('cursor', '')
