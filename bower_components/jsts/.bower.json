@@ -1,0 +1,14 @@
+{
+  "name": "jsts",
+  "homepage": "https://github.com/bjornharrtell/jsts",
+  "version": "0.14.0",
+  "_release": "0.14.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.14.0",
+    "commit": "ee6493f1b0bd8c635a0ecfed48595c796c5216ae"
+  },
+  "_source": "git://github.com/bjornharrtell/jsts.git",
+  "_target": "~0.14.0",
+  "_originalSource": "jsts"
+}
