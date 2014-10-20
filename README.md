@@ -12,4 +12,10 @@ Check bower.js for specific dependency versions
 * [JSTS](https://github.com/bjornharrtell/jsts)
 
 ## Installation
-Include dependencies in bower_components and src in your HTML.
+Add dist/leaflet.geofencer.min.js into your HTML file.
+
+```
+ <script type="text/javascript" src="/leaflet.geofencer.min.js"></script> 
+```
+
+Remember to include dependencies. They can be found in bower_components (exclude unneeded files -- Bower installation included more than necessary).
