@@ -1,0 +1,69 @@
+
+<head>
+    <script src="assets/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="assets/vendor/leaflet/dist/leaflet.js"></script>
+    <script src="assets/vendor/leaflet.polydrag/leaflet.polydrag.js"></script>
+    <script src="assets/vendor/leaflet.contextmenu/dist/leaflet.contextmenu.js"></script>
+
+    <link rel="stylesheet" href="assets/vendor/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/vendor/leaflet.contextmenu/dist/leaflet.contextmenu.css" />
+
+    <script type="text/javascript" src="assets/vendor/jsts/lib/javascript.util.js"></script>
+    <script type="text/javascript" src="assets/vendor/jsts/lib/jsts.js"></script>
+    <script type="text/javascript" src="../src/GeofencingMap.js"></script>
+    <script type="text/javascript" src="../src/Polygon.js"></script>
+    <script type="text/javascript" src="../src/MultiPolygon.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+
+    <style>
+        body{
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            margin: 0px;
+        }
+        .sidebar{
+            padding: 30px;
+            position: absolute;
+            z-index: 2;
+            width: 260px;
+            background-color: rgba(255,255,255,0.8);
+            margin: 15px;
+        }
+
+        .sidebar h1{
+            margin-top: 0;
+        }
+
+        .coords{
+            padding-left: 15px;
+            font-size: 12px;
+        }
+
+        input{
+            border: 1px solid #555;
+            padding: 8px;
+            margin: 8px 0px;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="sidebar">
+        <h1>Geofencer</h1>
+        <h2>Coordinates</h2>
+        <p>Polygon name will turn red if it is self-intersecting</p>
+            <ul class="coords"></ul>    
+            <div>
+            <a href="#" class="btn" id="allow-dragging">Disable Dragging</a> |
+            <a href="#" class="btn" id="clear-all">Delete All</a> |
+            <a href="#" class="btn" id="new-polygon">New Polygon</a>
+            </div>    
+        </div>
+
+        <!-- Must add geofencer-map class to map div -->
+        <div id="map" class="geofencer-map" style="width: 800px; height: 600px; min-width: 100%; min-height:100%"></div>
+    </div>
+</body>

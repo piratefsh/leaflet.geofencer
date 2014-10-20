@@ -1,0 +1,36 @@
+{
+  "name": "leaflet-geofencer",
+  "version": "0.0.1",
+  "authors": [
+    "Sher Minn Chong <sherminn.chong@gmail.com>"
+  ],
+  "description": "Geofencing tool for Leaflet. Polygon creation by coordinates.",
+  "main": "src/MultiPolygon.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "leaflet",
+    "polygon",
+    "geofence",
+    "geofencer",
+    "multipolygon"
+  ],
+  "license": "MIT",
+  "homepage": "piratefsh.github.io",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "leaflet": "~0.7.3",
+    "leaflet.polydrag": "snkashis/leaflet.polydrag",
+    "leaflet.contextmenu": "aratcliffe/Leaflet.contextmenu",
+    "jsts": "~0.14.0"
+  }
+}
