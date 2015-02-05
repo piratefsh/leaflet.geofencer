@@ -136,7 +136,7 @@ MultiPolygon.prototype = {
     }
 
 }
-var img_dir = './images/'
+var img_dir = 'http://piratefsh.github.io/leaflet.geofencer/dist/images/'
 
 var Polygon = function Polygon(map, name){
     this.name           = name;
