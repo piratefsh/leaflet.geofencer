@@ -1,6 +1,8 @@
 # Leaflet Geofencer
 
-A simple geofencing (polygon-creation) tool built on Leaflet. Check out the demo/index.html for examples.
+A simple geofencing (polygon-creation) tool built on Leaflet. Check out the [demo](http://piratefsh.github.io/leaflet.geofencer/).
+## Example
+[Polygons on a map!](http://piratefsh.github.io/leaflet.geofencer/)
 
 ## Dependencies
 Check bower.json for specific dependency versions 
