@@ -85,7 +85,6 @@ $(function() {
                 var c = $('<li>').html(coords[i].lat + ", " + coords[i].lng);
                 $('.coords').append(c);
             }
-            $('.coords').append('<hr/>');
 
         }
     }

@@ -9,7 +9,6 @@ GeofencingMap.prototype = {
     init : function init(){
         var osmUrl = 'http://192.168.2.86:8888/Sites/Tiles/{z}/{x}/{y}.png';
         
-
         osmUrl = 'http://{s}.tiles.mapbox.com/v3/piratefsh.jl6ae25j/{z}/{x}/{y}.png';
         var osmAttrib = 'OpenStreetMap contributors';
         var osm = new L.TileLayer(osmUrl, { minZoom: 1, maxZoom: 17, attribution: osmAttrib });
@@ -137,7 +136,7 @@ MultiPolygon.prototype = {
     }
 
 }
-var img_dir = '../src/images/'
+var img_dir = './images/'
 
 var Polygon = function Polygon(map, name){
     this.name           = name;
